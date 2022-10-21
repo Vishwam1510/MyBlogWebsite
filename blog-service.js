@@ -23,7 +23,7 @@ module.exports.initialize = function () {
     });
   };
   
-  module.exports.getAllPosts = fu|nction () {
+  module.exports.getAllPosts = function () {
     return new Promise((resolve, reject) => {
       if (posts.length > 0) resolve(posts);
       else reject("No Results Returned");
