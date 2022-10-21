@@ -5,20 +5,25 @@ let categories = [];
 
 
 module.exports.initialize = function () {
-    return new Promise((resolve, reject) => {
-      fs.readFile("./data/posts.JSON", (err, data) => {
-        if (err){
-          reject("unable to read the file");
-        } else {
-          resolve();
-      }});
-      fs.readFile("./data/categories.JSON", (err, data) => {
-        if (err) reject("unable to read the file");
-        categories = JSON.parse(data);
+  return new Promise((resolve, reject) => {
+      fs.readFile('./data/posts.json', 'utf8', (err, data) => {
+          if (err) {
+              reject(err);
+          } else {
+              posts = JSON.parse(data);
+
+              fs.readFile('./data/categories.json', 'utf8', (err, data) => {
+                  if (err) {
+                      reject(err);
+                  } else {
+                      categories = JSON.parse(data);
+                      resolve();
+                  }
+              });
+          }
       });
-      resolve();
-    });
-  };
+  });
+}
   
   module.exports.getAllPosts = function () {
     return new Promise((resolve, reject) => {
