@@ -1,6 +1,8 @@
-var posts = [];
-var categories = [];
-var fs = require("fs");
+const fs = require("fs");
+
+let posts = [];
+let categories = [];
+
 
 module.exports.initialize = function () {
     return new Promise((resolve, reject) => {

@@ -1,9 +1,25 @@
-var HTTP_PORT = process.env.PORT || 8080;
-var express = require("express");
-var app = express();
-var path = require("path");
-var data = require("./blog-service.js");
-app.use(express.static("public/css"));
+/*********************************************************************************
+*  WEB322 – Assignment 02
+*  I declare that this assignment is my own work in accordance with Seneca  Academic Policy.  No part *  of this assignment has been copied manually or electronically from any other source 
+*  (including 3rd party web sites) or distributed to other students.
+* 
+*  Name: Vishwam Shailesh Kapadia Student ID: 154933212 Date: 21-10-22
+*
+*  Cyclic Web App URL: ________________________________________________________
+*
+*  GitHub Repository URL: ______________________________________________________
+*
+********************************************************************************/ 
+
+
+const express = require("express");
+const app = express();
+const path = require("path");
+const blogData = require("./blog-service.js");
+app.use(express.static('public'));
+
+
+const HTTP_PORT = process.env.PORT || 8080;
 
 function onHTTPStart() {
     console.log("Express http server listening on port " + HTTP_PORT);
@@ -18,7 +34,7 @@ app.get("/about", (req, res) => {
   });
 
 app.get("/blog", (req, res) => {
-    data.published().then((data) =>{
+    blogData.getAllPosts().then((data) =>{
         res.json(data);
     })
     .catch((err) => {
@@ -27,7 +43,7 @@ app.get("/blog", (req, res) => {
 });
 
 app.get("/posts", (req, res) => {
-    data.getAllPosts().then((data) =>{
+    blogData.getAllPosts().then((data) =>{
         res.json(data);
     })
     .catch((err) => {
@@ -36,7 +52,7 @@ app.get("/posts", (req, res) => {
 });
 
 app.get("/categories", (req, res) => {
-    data.getCategories().then((data) =>{
+    blogData.getCategories().then((data) =>{
         res.json(data);
     })
     .catch((err) => {
@@ -52,7 +68,7 @@ app.use((req, res) => {
       );
   });
 
-  data
+  blogData
   .initialize()
   .then(() => {
     app.listen(HTTP_PORT, onHTTPStart);
