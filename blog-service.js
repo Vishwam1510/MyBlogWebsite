@@ -7,10 +7,11 @@ let categories = [];
 module.exports.initialize = function () {
     return new Promise((resolve, reject) => {
       fs.readFile("./data/posts.JSON", (err, data) => {
-        if (err) reject("Unable to read the file");
-        posts = JSON.parse(data);
-        resolve();
-      });
+        if (err){
+          reject("unable to read the file");
+        } else {
+          resolve();
+      }});
       fs.readFile("./data/categories.JSON", (err, data) => {
         if (err) reject("unable to read the file");
         categories = JSON.parse(data);
