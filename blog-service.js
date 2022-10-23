@@ -1,4 +1,5 @@
 const fs = require("fs");
+const { resolve } = require("path");
 
 let posts = [];
 let categories = [];
@@ -46,4 +47,62 @@ module.exports.initialize = function () {
       else reject("No Results Returned");
     });
   };
-  
+
+  module.exports.addPost = (postData) => {
+    return new Promise((resolve, reject) => {
+      if(typeof postData.published === undefined){
+        postData.published =false;
+      }
+      else{
+        postData.published = true;
+      }
+      postData.id = posts.length + 1;
+      posts.push(postData);
+    });
+  };
+
+  module.exports.getPostsByCategory = (category) => {
+    return new Promise((resolve, reject) => {
+      var post = [];
+      for(let i = 0; i < posts.length; i++){
+      if(posts[i].category == category){
+        post.push(posts[i]);
+      }
+    }
+    if(post){
+      resolve(post);
+    }else{
+      reject("no results returned");
+    }
+  });
+};
+
+
+module.exports.getPostsByMinDate = (minDateStr) => {
+  return new Promise((resolve, reject) => {
+    var post = [];
+    for(let i = 0; i < posts.length; i++){
+    if(new Date(posts[i].postDate)>=new Date(minDateStr)){
+      post.push(posts[i]);
+    }
+  }
+  if(post){
+    resolve(post);
+  }else{
+    reject("no results returned");
+  }
+});
+};
+
+module.exports.getPostbyId = (id) => {
+  return new Promise((resolve, reject) => {
+    var post;
+    if(posts.id === id)
+    {
+      resolve(posts);
+    }
+    else{
+      reject("no result returned");
+    }
+  });
+};
