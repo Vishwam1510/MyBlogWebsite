@@ -18,7 +18,7 @@ const path = require("path");
 const blogData = require("./blog-service.js");
 const multer = require("multer");
 const cloudinary = require('cloudinary').v2;
-const streamify = require('streamifier');
+const streamifier = require('streamifier');
 app.use(express.static('public'));
 
 
