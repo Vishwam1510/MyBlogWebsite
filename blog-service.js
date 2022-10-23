@@ -58,6 +58,7 @@ module.exports.initialize = function () {
       }
       postData.id = posts.length + 1;
       posts.push(postData);
+      resolve(postData);
     });
   };
 
