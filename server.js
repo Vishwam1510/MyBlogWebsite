@@ -91,7 +91,8 @@ app.get("/categories", (req, res) => {
 });
 
 app.get("/posts/add", (req, res) => {
-    res.send(path.join(__dirname, "/views/addPost.html"));
+    res.sendFile(path.join(__dirname, "/views/addPost.html"));
+    console.log("hello");
 });
 
 cloudinary.config({
@@ -139,8 +140,8 @@ app.post("/posts/add", upload.single("featureImage"), (req, res) => {
         blogData.addPost(req.body).then(()=>{
             res.redirect("/posts");
         })
-    }    
-    res.redirect("/posts");
+    }   
+    res.redirect("/posts"); 
   });
 
 
