@@ -47,23 +47,23 @@ app.get("/blog", (req, res) => {
 
 app.get("/posts", (req, res) => {
     if(req.query.category){
-        blogData.getPostsByCategory(req.query.category).then((data)=>{
-            res.json(data);
+        blogData.getPostsByCategory(req.query.category).then((blogData)=>{
+            res.json(blogData);
         })
         .catch((err)=>{
             res.json({Message: "Error"});
         });
     }
     if(req.query.minDate){
-        blogData.getPostsByMinDate(req.query.minDate).then((data)=>{
-            res.json(data);
+        blogData.getPostsByMinDate(req.query.minDate).then((blogData)=>{
+            res.json(blogData);
         })
         .catch((err)=>{
             res.json({Message: "Error"});
         });
     }
-    blogData.getAllPosts().then((data) =>{
-        res.json(data);
+    blogData.getAllPosts().then((blogData) =>{
+        res.json(blogData);
     })
     .catch((err) => {
         res.json({Message: "Error"});
@@ -71,10 +71,10 @@ app.get("/posts", (req, res) => {
 });
 
 app.get("/post/value", (req, res) => {
-    data
+    blogData
       .getPostById(id)
-      .then((data) => {
-        res.json(data);
+      .then((blogData) => {
+        res.json(blogData);
       })
       .catch((err) => {
         res.json({ Message: "Error" });
@@ -82,8 +82,8 @@ app.get("/post/value", (req, res) => {
   });
 
 app.get("/categories", (req, res) => {
-    blogData.getCategories().then((data) =>{
-        res.json(data);
+    blogData.getCategories().then((blogData) =>{
+        res.json(blogData);
     })
     .catch((err) => {
         res.json({Message: "Error"});
