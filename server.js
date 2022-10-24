@@ -1,9 +1,9 @@
 /*********************************************************************************
-*  WEB322 – Assignment 02
+*  WEB322 – Assignment 03
 *  I declare that this assignment is my own work in accordance with Seneca  Academic Policy.  No part *  of this assignment has been copied manually or electronically from any other source 
 *  (including 3rd party web sites) or distributed to other students.
 * 
-*  Name: Vishwam Shailesh Kapadia Student ID: 154933212 Date: 21-10-22
+*  Name: Vishwam Shailesh Kapadia Student ID: 154933212 Date: 23-10-22
 *
 *  Cyclic Web App URL: https://cyan-amused-seahorse.cyclic.app/
 *
@@ -47,23 +47,23 @@ app.get("/blog", (req, res) => {
 
 app.get("/posts", (req, res) => {
     if(req.query.category){
-        blogData.getPostsByCategory(req.query.category).then((blogData)=>{
-            res.json(blogData);
+        blogData.getPostsByCategory(req.query.category).then((data)=>{
+            res.json(data);
         })
         .catch((err)=>{
             res.json({Message: "Error"});
         });
     }
     if(req.query.minDate){
-        blogData.getPostsByMinDate(req.query.minDate).then((blogData)=>{
-            res.json(blogData);
+        blogData.getPostsByMinDate(req.query.minDate).then((data)=>{
+            res.json(data);
         })
         .catch((err)=>{
             res.json({Message: "Error"});
         });
     }
-    blogData.getAllPosts().then((blogData) =>{
-        res.json(blogData);
+    blogData.getAllPosts().then((data) =>{
+        res.json(data);
     })
     .catch((err) => {
         res.json({Message: "Error"});
@@ -71,10 +71,10 @@ app.get("/posts", (req, res) => {
 });
 
 app.get("/post/value", (req, res) => {
-    blogData
+    data
       .getPostById(id)
-      .then((blogData) => {
-        res.json(blogData);
+      .then((data) => {
+        res.json(data);
       })
       .catch((err) => {
         res.json({ Message: "Error" });
@@ -82,8 +82,8 @@ app.get("/post/value", (req, res) => {
   });
 
 app.get("/categories", (req, res) => {
-    blogData.getCategories().then((blogData) =>{
-        res.json(blogData);
+    blogData.getCategories().then((data) =>{
+        res.json(data);
     })
     .catch((err) => {
         res.json({Message: "Error"});
