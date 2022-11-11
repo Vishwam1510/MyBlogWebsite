@@ -56,7 +56,15 @@ module.exports.initialize = function () {
       else{
         postData.published = true;
       }
+      function formatDate(dateObj){
+        let year = dateObj.getFullYear();
+        let month = (dateObj.getMonth() + 1).toString();
+        let day = dateObj.getDate().toString();
+        return `${year}-${month.padStart(2, '0')}-${day.padStart(2,'0')}`;
+      }
+      var date=new Date();    
       postData.id = posts.length + 1;
+      postData.postDate = formatDate(date);  
       posts.push(postData);
       resolve(postData);
     });
@@ -95,22 +103,22 @@ module.exports.getPostsByMinDate = (minDateStr) => {
 });
 };
 
-module.exports.getPostbyId = (id) => {
-  return new Promise((resolve, reject) => {
-    var post;
-    if(posts.id === id)
-    {
-      resolve(posts);
+module.exports.getPostById = (id) => {
+  return new Promise((resolve,reject)=>{
+    console.log("HELLO!!")
+    let foundPost = posts.find(post => post.id == id);
+    if(foundPost){
+      console.log(foundPost);
+      resolve(foundPost);        
+    }else{
+        reject("no result returned");
     }
-    else{
-      reject("no result returned");
-    }
-  });
+});
 };
 
 module.exports.getPublishedPostsByCategory = (category) => {
   return new Promise((resolve, reject) => {
-    const intPosts = posts.filter((pos) => {
+    const intPosts = posts.filter((post) => {
       return (post.published == true && post.category == category);
     });
     if (intPosts.length > 0) resolve(intPosts);
