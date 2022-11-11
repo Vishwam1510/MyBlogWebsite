@@ -9,7 +9,7 @@
       <link rel="stylesheet" href="/css/main.css">
       <link rel="stylesheet" href="https://bootswatch.com/3/slate/bootstrap.min.css" />
       
-      <title>About</title>
+      <title>Vishwam Kapadia's Blog</title>
   </head>
   <body>
     <nav class="navbar navbar-default navbar-fixed-top">
@@ -28,33 +28,19 @@
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
           <ul class="nav navbar-nav">
-            <li><a href="/blog">Blog</a></li>
-            <li class="active"><a href="/about">About</a></li>
+            {{#navLink "/blog"}}Blog{{/navLink}}
+            {{#navLink "/about"}}About{{/navLink}}
           </ul>
           <ul class="nav navbar-nav navbar-right">
-            <li><a href="/posts">Posts</a></li>
-            <li><a href="/categories">Categories</a></li>            
-            <li><a href="/posts/add">Add Post</a></li>          
+            {{#navLink "/posts"}}Posts{{/navLink}}
+            {{#navLink "/categories"}}Categories{{/navLink}}           
+            {{#navLink "/posts/add"}}Add Post{{/navLink}}        
           </ul>
         </div><!-- /.navbar-collapse -->
       </div><!-- /.container-fluid -->
     </nav>
     <div class="container" style="padding-top:60px">
-      <div class="row">
-        <section class="main col-md-9">
-          <article>
-          <h2>About</h2>
-          <p>Hi, I am Vishwam Shailesh Kapadia, I am from India and currently pursuing Computer Programming/Analysis course in Seneca College.</p>
-          <p>My plan after graduation is to become a good software developer for a decent as well as well known company.</p>
-          <p>Talking about my other interests, I love playing video games, going out with friends, and going on trips.</p>
-          <p>Last but not least, I also want to start a side hustle business of mine apart from being a good developer.</p>
-          </article>
-        </section>
-        <aside class="col-md-3">
-          <h2>Coming soon</h2>
-          <p>Hang tight, we will be landing soon!</p>
-        </aside>
-      </div>
+      {{{body}}}
     </div>
 
     <!-- Latest compiled and minified jQuery 3.6.0 JavaScript -->
