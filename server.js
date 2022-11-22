@@ -1,5 +1,5 @@
 /*********************************************************************************
-*  WEB322 – Assignment 04
+*  WEB322 – Assignment 05
 *  I declare that this assignment is my own work in accordance with Seneca  Academic Policy.  No part *  of this assignment has been copied manually or electronically from any other source 
 *  (including 3rd party web sites) or distributed to other students.
 * 
@@ -42,6 +42,8 @@ function onHTTPStart() {
 
 const upload = multer();
 
+app.use(express.urlencoded({extended: true}));
+
 app.use(function(req,res,next){
     let route = req.path.substring(1);
     app.locals.activeRoute = (route == "/") ? "/" : "/" + route.replace(/\/(.*)/, "");
@@ -69,6 +71,12 @@ equal: function (lvalue, rvalue, options) {
 },
 safeHTML: function(context){
     return stripJs(context);
+},
+formatDate: function(dateObj){
+    let year = dateObj.getFullYear();
+    let month = (dateObj.getMonth() + 1).toString();
+    let day = dateObj.getDate().toString();
+    return `${year}-${month.padStart(2, '0')}-${day.padStart(2,'0')}`;
 }}
  }));
 
@@ -184,7 +192,12 @@ app.get('/blog/:id', async (req, res) => {
 app.get("/posts", (req, res) => {
     if(req.query.category){
         blogData.getPostsByCategory(req.query.category).then((data)=>{
-            res.render("posts", {posts: data});
+            if(data.length>0){
+                res.render("posts", {posts: data});
+            }
+            else{
+                res.render("posts", {message: "no results"});
+            }
         })
         .catch((err)=>{
             res.render("posts", {message: "no results"});
@@ -192,14 +205,24 @@ app.get("/posts", (req, res) => {
     }
     if(req.query.minDate){
         blogData.getPostsByMinDate(req.query.minDate).then((data)=>{
-            res.render("posts", {posts: data});
+            if(data.length>0){
+                res.render("posts", {posts: data});
+            }
+            else{
+                res.render("posts", {message: "no results"});
+            }
         })
         .catch((err)=>{
             res.render("posts", {message: "no results"});
         });
     }
     blogData.getAllPosts().then((data) =>{
-        res.render("posts", {posts: data});
+        if(data.length>0){
+            res.render("posts", {posts: data});
+        }
+        else{
+            res.render("posts", {message: "no results"});
+        }
     })
     .catch((err) => {
         res.render("posts", {message: "no results"});
@@ -217,7 +240,12 @@ app.get('/post/:id', (req,res)=>{
 
 app.get("/categories", (req, res) => {
     blogData.getCategories().then((data) =>{
-        res.render("categories", {categories: data});
+        if(data.length >0){
+            res.render("categories", {categories: data});
+        }
+        else{
+            res.render("categories", {message: "no results"});
+        }
     })
     .catch((err) => {
         res.render("categories", {message: "no results"});
@@ -228,7 +256,31 @@ app.get("/posts/add", (req, res) => {
     res.render('addPost');
 });
 
+app.get("/categories/add", (req, res) => {
+    res.render('addCategory');
+});
 
+app.get("/categories/delete/:id", (req, res)=>{
+    blogData.deleteCategoryById(req.params.id).then(()=>{
+        res.redirect("/categories");
+    }).catch((err) => {
+        res.status(500).send("Unable to Remove Category / Category not found)");
+    })
+});
+
+app.get("/posts/delete/:id", (req, res)=>{
+    blogData.deletePostById(req.params.id).then(()=>{
+        res.redirect("/posts");
+    }).catch((err) => {
+        res.status(500).send("Unable to Remove Category / Category not found)");
+    })
+});
+
+app.post("/categories/add", (req, res)=>{
+    blogData.addCategory(req.body).then(()=>{
+        res.redirect("/categories");
+    })
+})
 
 
 app.post("/posts/add", upload.single("featureImage"), (req, res) => {
@@ -243,8 +295,7 @@ app.post("/posts/add", upload.single("featureImage"), (req, res) => {
                             reject(error);
                         }
                     }
-                );
-    
+                );    
                 streamifier.createReadStream(req.file.buffer).pipe(stream);
             });
         };
