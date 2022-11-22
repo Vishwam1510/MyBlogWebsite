@@ -61,15 +61,16 @@ module.exports.initialize = function(){
 };
 
 
-  module.exports.getCategories = function () {
-    return new Promise((resolve, reject) => {
+module.exports.getCategories=function(){
+  return new Promise((resolve, reject) => {
       Category.findAll().then(function(data){
           resolve(data);
       }).catch((err)=>{
           reject("no results returned");
       })
   });
-};
+
+}
 
 module.exports.addPost=function (postData){
   return new Promise((resolve, reject) => {
