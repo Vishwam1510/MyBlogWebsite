@@ -1,5 +1,5 @@
 /*********************************************************************************
-*  WEB322 – Assignment 5
+*  WEB322 – Assignment 6
 *  I declare that this assignment is my own work in accordance with Seneca  Academic Policy.  No part *  of this assignment has been copied manually or electronically from any other source 
 *  (including 3rd party web sites) or distributed to other students.
 * 
@@ -23,6 +23,9 @@ app.use(express.static('public'));
 const exphbs = require('express-handlebars');
 const stripJs = require('strip-js');
 const { mainModule } = require("process");
+const authData = require("./auth-service");
+const clientSessions = require("client-sessions");
+
 
 
 
@@ -43,6 +46,26 @@ function onHTTPStart() {
 const upload = multer();
 
 app.use(express.urlencoded({extended: true}));
+
+app.use(clientSessions({
+    cookieName: "session", 
+    secret: "assignment06", 
+    duration: 2 * 60 * 1000, 
+    activeDuration: 1000 * 60 
+}));
+
+app.use(function(req, res, next) {
+    res.locals.session = req.session;
+    next();
+});
+
+function ensureLogin(req, res, next) {
+    if (!req.session.user) {
+      res.redirect("/login");
+    } else {
+      next();
+    }
+}
 
 app.use(function(req,res,next){
     let route = req.path.substring(1);
@@ -189,7 +212,7 @@ app.get('/blog/:id', async (req, res) => {
     res.render("blog", {data: viewData})
 });
 
-app.get("/posts", (req, res) => {
+app.get("/posts", ensureLogin, (req, res) => {
     if(req.query.category){
         blogData.getPostsByCategory(req.query.category).then((data)=>{
             if(data.length>0){
@@ -229,7 +252,7 @@ app.get("/posts", (req, res) => {
     });
 });
 
-app.get('/post/:id', (req,res)=>{
+app.get('/post/:id', ensureLogin, (req,res)=>{
     blogData.getPostById(req.params.id).then(data=>{
         res.json(data);
     }).catch(err=>{
@@ -238,7 +261,7 @@ app.get('/post/:id', (req,res)=>{
 });
 
 
-app.get("/categories", (req, res) => {
+app.get("/categories", ensureLogin, (req, res) => {
     blogData.getCategories().then((data) =>{
         if(data.length >0){
             res.render("categories", {categories: data});
@@ -252,7 +275,7 @@ app.get("/categories", (req, res) => {
     });
 });
 
-app.get("/posts/add", (req, res) => {
+app.get("/posts/add", ensureLogin, (req, res) => {
     blogData.getCategories().then((data)=>{
         res.render("addPost",{layout:"main.hbs", categories:data});
     }).catch((err)=>{
@@ -260,11 +283,11 @@ app.get("/posts/add", (req, res) => {
     })
 });
 
-app.get("/categories/add", (req, res) => {
+app.get("/categories/add", ensureLogin, (req, res) => {
     res.render('addCategory');
 });
 
-app.get("/categories/delete/:id", (req, res)=>{
+app.get("/categories/delete/:id", ensureLogin, (req, res)=>{
     blogData.deleteCategoryById(req.params.id).then(()=>{
         res.redirect("/categories");
     }).catch((err) => {
@@ -272,7 +295,7 @@ app.get("/categories/delete/:id", (req, res)=>{
     })
 });
 
-app.get("/posts/delete/:id", (req, res)=>{
+app.get("/posts/delete/:id", ensureLogin, (req, res)=>{
     blogData.deletePostById(req.params.id).then(()=>{
         res.redirect("/posts");
     }).catch((err) => {
@@ -280,14 +303,31 @@ app.get("/posts/delete/:id", (req, res)=>{
     })
 });
 
-app.post("/categories/add", (req, res)=>{
+app.get("/login", (req, res) => { 
+    res.render("login");
+});
+
+app.get("/register", (req, res) => { 
+    res.render("register");
+});
+
+app.get("/logout", (req, res) => {
+    req.session.reset();
+    res.redirect("/login");
+});
+
+app.get("/userHistory", ensureLogin, (req, res) => {
+    res.render("userHistory");
+});
+
+app.post("/categories/add", ensureLogin, (req, res)=>{
     blogData.addCategory(req.body).then(()=>{
         res.redirect("/categories");
     })
 })
 
 
-app.post("/posts/add", upload.single("featureImage"), (req, res) => {
+app.post("/posts/add", ensureLogin, upload.single("featureImage"), (req, res) => {
     if(req.file){
         let streamUpload = (req) => {
             return new Promise((resolve, reject) => {
@@ -325,15 +365,43 @@ app.post("/posts/add", upload.single("featureImage"), (req, res) => {
     }   
   });
 
+app.post("/register", (req, res) => { 
+    authData.registerUser(req.body)
+    .then(() => {
+        res.render("register", {successMessage: "User created"});
+    })
+    .catch((err) => {
+        res.render("register", {errorMessage: err, userName: req.body.userName});
+    })
+});
+
+app.post("/login", (req, res) => { 
+    req.body.userAgent = req.get('User-Agent');
+    authData.checkUser(req.body).then((user) => {
+        req.session.user = {
+            userName: user.userName,
+            email: user.email,
+            loginHistory: user.loginHistory
+        }
+    
+        res.redirect('/posts');
+    })
+    .catch((err) => {
+        res.render("login", {errorMessage: err, userName: req.body.userName});
+    })  
+});
+
+
 app.use((req, res) => {
     res.render("404");
   });
 
-  blogData
-  .initialize()
-  .then(() => {
-    app.listen(HTTP_PORT, onHTTPStart);
-  })
-  .catch((err) => {
-    console.log("Error in initializing the data.");
-  });
+  blogData.initialize()
+.then(authData.initialize)
+.then(function(){
+    app.listen(HTTP_PORT, function(){
+        console.log("app listening on: " + HTTP_PORT)
+    });
+}).catch(function(err){
+    console.log("unable to start server: " + err);
+});
