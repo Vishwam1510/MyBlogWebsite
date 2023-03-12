@@ -7,7 +7,7 @@
 *
 *  Cyclic Web App URL: https://cyan-amused-seahorse.cyclic.app/
 *
-*  GitHub Repository URL: https://github.com/Vishwam1510/web-322.git
+*  GitHub Repository URL: https://github.com/Vishwam1510/MyBlogWebsite.git
 *
 ********************************************************************************/ 
 
